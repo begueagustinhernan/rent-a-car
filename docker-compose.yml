@@ -1,5 +1,5 @@
 services:
-  rentacar_db :
+  rentacar_db:
     image: postgres:15-alpine
     container_name: rentacar-postgres-db
     restart: always
