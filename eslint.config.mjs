@@ -1,35 +1,18 @@
-// @ts-check
-import eslint from '@eslint/js';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import globals from 'globals';
-import tseslint from 'typescript-eslint';
+import nestjsEslintConfig from '@nestjs/eslint-config';
 
-export default tseslint.config(
-  {
-    ignores: ['eslint.config.mjs'],
-  },
-  eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
-  eslintPluginPrettierRecommended,
-  {
-    languageOptions: {
-      globals: {
-        ...globals.node,
-        ...globals.jest,
-      },
-      sourceType: 'commonjs',
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-  },
+export default [
+  ...nestjsEslintConfig,
   {
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
-      "prettier/prettier": ["error", { endOfLine: "auto" }],
+      // Apaga por completo el linter de Prettier (chau líneas en los imports y saltos de línea)
+      'prettier/prettier': 'off',
+
+      // Apaga la alerta de cosas declaradas o importadas que todavía no usaste
+      '@typescript-eslint/no-unused-vars': 'off',
+
+      // Desactiva alertas sobre espacios, tabulaciones y formateo interno mientras tipeás
+      'indent': 'off',
+      'no-trailing-spaces': 'off',
     },
   },
-);
+];
