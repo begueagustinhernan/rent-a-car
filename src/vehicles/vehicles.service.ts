@@ -1,9 +1,10 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Vehicle } from './vehicle.entity';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
+import { VEHICLE_PRICE_RANGES } from './constants/price-ranges.constant';
 
 @Injectable()
 export class VehiclesService {
@@ -13,11 +14,18 @@ export class VehiclesService {
     ) { }
 
     async create(dto: CreateVehicleDto) {
-        const { plate } = dto
+        const { plate, type, basePricePerDay } = dto
 
         const existingVehicle = await this.vehicleRepository.findOneBy({ plate });
         if (existingVehicle) {
             throw new ConflictException(`Vehicle with plate ${plate} is already registered.`);
+        }
+
+        const range = VEHICLE_PRICE_RANGES[type];
+        if (basePricePerDay < range.min || basePricePerDay > range.max) {
+            throw new BadRequestException(
+                `Price $${basePricePerDay} is invalid for category ${type}. Allowed range: [$${range.min} - $${range.max}].`
+            );
         }
 
         const newVehicle = this.vehicleRepository.create(dto);
@@ -40,6 +48,17 @@ export class VehiclesService {
 
     async update(id: string, updateVehicleDto: UpdateVehicleDto) {
         const vehicle = await this.findOne(id);
+
+        const finalType = updateVehicleDto.type || vehicle.type;
+        const finalPrice = updateVehicleDto.basePricePerDay !== undefined ? updateVehicleDto.basePricePerDay : vehicle.basePricePerDay;
+
+        const range = VEHICLE_PRICE_RANGES[finalType];
+
+        if (finalPrice < range.min || finalPrice > range.max) {
+            throw new BadRequestException(
+                `Price $${finalPrice} is invalid for category ${finalType}. Allowed range: [$${range.min} - $${range.max}].`
+            );
+        }
 
         const updatedVehicle = this.vehicleRepository.merge(vehicle, updateVehicleDto);
         return await this.vehicleRepository.save(updatedVehicle);
