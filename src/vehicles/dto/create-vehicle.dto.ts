@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsNotEmpty, IsString, Max, Min } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsString, IsNumber, IsPositive, Max, Min } from 'class-validator';
 import { VehicleType } from '../enums/vehicle-type.enum';
 import { VehicleStatus } from '../enums/vehicle-status.enum';
 import { min } from 'rxjs';
@@ -20,6 +20,10 @@ export class CreateVehicleDto {
     @Min(1900)
     @Max(new Date().getFullYear() + 1)
     year!: number;
+
+    @IsNumber()
+    @IsPositive()
+    basePricePerDay!: number;
 
     @IsEnum(VehicleType)
     type!: VehicleType;
