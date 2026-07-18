@@ -59,3 +59,46 @@ The API enforces that a vehicle's base daily rate falls strictly within its cate
   "status": "AVAILABLE"
 }
 ```
+
+---
+
+## 🔧 Getting Started
+
+### Prerequisites
+
+* **Node.js** (v18 or higher recommended)
+* **Docker** & **Docker Compose** (for running the database container)
+
+### Installation & Setup
+
+1. **Clone the repository:**
+```bash
+git clone https://github.com/begueagustinhernan/rent-a-car.git
+cd rent-a-car
+```
+
+2. **Install project dependencies:**
+```bash
+npm install
+```
+
+3. **Spin up the PostgreSQL database container:**
+```bash
+docker compose up -d
+```
+*(Note: This creates and starts the isolated database container running in the background).*
+
+4. **Configure Environment Variables:**
+Copy the example environment file to create your local `.env` configuration:
+```bash
+cp .env.example .env
+```
+Open the newly created `.env` file and fill in your local network database credentials.
+
+5. **Run the application:**
+```bash
+# Development mode with hot-reload
+npm run start:dev
+```
+
+The server will spin up at `http://localhost:3000`. You can now use Postman to test the endpoints against your local database container.
